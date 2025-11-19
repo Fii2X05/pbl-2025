@@ -167,8 +167,32 @@ CREATE TABLE products (
 
 CREATE TABLE team_members (
     member_id SERIAL PRIMARY KEY,
-    name VARCHAR(100) NOT NULL,
-    position VARCHAR(100), 
+    user_id INT REFERENCES users(user_id), -- Link ke akun login (opsional)
+    
+    -- Info Utama (Header)
+    name VARCHAR(100) NOT NULL, -- Contoh: BANNI SATRIA ANDOKO
+    position VARCHAR(100),      -- Contoh: Lecturer in State Polytechnic...
     photo_url VARCHAR(255),
-    social_links JSONB 
+    
+    -- Kontak Detail (Sesuai Gambar)
+    address TEXT,               -- Contoh: Jl. Soekarno Hatta No.9...
+    phone_number VARCHAR(50),   -- Contoh: (62) 813-5988-9181
+    public_email VARCHAR(100),  -- Contoh: ando@polinema.ac.id
+    
+    -- Social Media (LinkedIn, Scopus, Google Scholar, dll)
+    -- Disimpan dalam format JSON agar ikonnya bisa dinamis
+    -- Contoh: {"linkedin": "url...", "scopus": "url...", "scholar": "url..."}
+    social_links JSONB, 
+    
+    -- Konten Profil Detail (Education, Skills, Interests)
+    -- Menggunakan JSONB agar strukturnya fleksibel tanpa buat banyak tabel
+    -- Contoh isi: 
+    -- {
+    --   "education": ["PhD in ...", "Master in ..."],
+    --   "skills": ["Data Science", "AI"],
+    --   "interests": ["Reading", "Coding"]
+    -- }
+    profile_details JSONB, 
+    
+    created_at TIMESTAMP DEFAULT CURRENT_TIMESTAMP
 );
