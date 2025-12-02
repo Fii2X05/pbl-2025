@@ -59,29 +59,25 @@ class User {
 
         $stmt = $this->conn->prepare($query);
 
-        // PERBAIKAN: Gunakan ?? '' agar tidak error saat nilai NULL
+        // PERBAIKAN: Gunakan operator null coalescing (?? '') untuk mencegah error strip_tags(null)
         $this->username = htmlspecialchars(strip_tags($this->username ?? ''));
         $this->full_name = htmlspecialchars(strip_tags($this->full_name ?? ''));
-        $this->nim = htmlspecialchars(strip_tags($this->nim ?? ''));
         $this->institution = htmlspecialchars(strip_tags($this->institution ?? ''));
         $this->email = htmlspecialchars(strip_tags($this->email ?? ''));
         $this->role = htmlspecialchars(strip_tags($this->role ?? ''));
-        $this->student_type = htmlspecialchars(strip_tags($this->student_type ?? ''));
-
-        // Jika string kosong, kembalikan ke NULL agar database bersih (Opsional, tergantung kebijakan DB)
-        // Di sini kita biarkan string kosong atau NULL sesuai kebutuhan binding
-        $nimVal = empty($this->nim) ? null : $this->nim;
-        $instVal = empty($this->institution) ? null : $this->institution;
-        $stTypeVal = empty($this->student_type) ? null : $this->student_type;
+        
+        // Khusus NIM dan Student Type, jika kosong/null, biarkan null untuk database
+        $nimClean = !empty($this->nim) ? htmlspecialchars(strip_tags($this->nim)) : null;
+        $studentTypeClean = !empty($this->student_type) ? htmlspecialchars(strip_tags($this->student_type)) : null;
 
         $stmt->bindParam(':username', $this->username);
         $stmt->bindParam(':password', $this->password);
         $stmt->bindParam(':full_name', $this->full_name);
-        $stmt->bindParam(':nim', $nimVal);
-        $stmt->bindParam(':institution', $instVal);
+        $stmt->bindParam(':nim', $nimClean); // Bind variable lokal
+        $stmt->bindParam(':institution', $this->institution);
         $stmt->bindParam(':email', $this->email);
         $stmt->bindParam(':role', $this->role);
-        $stmt->bindParam(':student_type', $stTypeVal);
+        $stmt->bindParam(':student_type', $studentTypeClean); // Bind variable lokal
         $stmt->bindParam(':is_active', $this->is_active, PDO::PARAM_BOOL);
 
         if($stmt->execute()) { return true; }
@@ -89,6 +85,7 @@ class User {
     }
 
     public function update() {
+        // Cek apakah password diupdate atau tidak
         if(!empty($this->password)){
             $query = "UPDATE " . $this->table_name . " 
                       SET username = :username,
@@ -118,33 +115,45 @@ class User {
 
         $stmt = $this->conn->prepare($query);
 
-        // PERBAIKAN: Tambahkan ?? '' untuk mencegah error Deprecated di PHP 8.1+
+        // PERBAIKAN: Cegah error strip_tags(null) dengan (?? '')
         $this->id = (int)$this->id;
         $this->username = htmlspecialchars(strip_tags($this->username ?? ''));
         $this->full_name = htmlspecialchars(strip_tags($this->full_name ?? ''));
-        $this->nim = htmlspecialchars(strip_tags($this->nim ?? ''));
         $this->institution = htmlspecialchars(strip_tags($this->institution ?? ''));
         $this->email = htmlspecialchars(strip_tags($this->email ?? ''));
         $this->role = htmlspecialchars(strip_tags($this->role ?? ''));
-        $this->student_type = htmlspecialchars(strip_tags($this->student_type ?? ''));
 
-        // Handle Null values for DB
-        $nimVal = empty($this->nim) ? null : $this->nim;
-        $instVal = empty($this->institution) ? null : $this->institution;
-        $stTypeVal = empty($this->student_type) ? null : $this->student_type;
+        // Khusus NIM dan Student Type
+        // Jika diubah jadi Dosen, ini akan NULL. Kita harus handle agar tidak masuk ke strip_tags sebagai null
+        $nimClean = !empty($this->nim) ? htmlspecialchars(strip_tags($this->nim)) : null;
+        $studentTypeClean = !empty($this->student_type) ? htmlspecialchars(strip_tags($this->student_type)) : null;
 
+        // Binding
         $stmt->bindParam(':username', $this->username);
+        
         if(!empty($this->password)){
             $stmt->bindParam(':password', $this->password);
         }
+        
         $stmt->bindParam(':full_name', $this->full_name);
-        $stmt->bindParam(':nim', $nimVal);
-        $stmt->bindParam(':institution', $instVal);
+        $stmt->bindParam(':nim', $nimClean); // Gunakan hasil bersih yang bisa bernilai NULL
+        $stmt->bindParam(':institution', $this->institution);
         $stmt->bindParam(':email', $this->email);
         $stmt->bindParam(':role', $this->role);
-        $stmt->bindParam(':student_type', $stTypeVal);
+        $stmt->bindParam(':student_type', $studentTypeClean); // Gunakan hasil bersih yang bisa bernilai NULL
         $stmt->bindParam(':is_active', $this->is_active, PDO::PARAM_BOOL);
         $stmt->bindParam(':id', $this->id);
+
+        // Debugging: Uncomment jika masih gagal untuk melihat error spesifik
+        /*
+        try {
+            if($stmt->execute()) { return true; }
+        } catch(PDOException $e) {
+            echo "Error: " . $e->getMessage();
+            exit;
+        }
+        return false;
+        */
 
         if($stmt->execute()) { return true; }
         return false;

@@ -1,18 +1,16 @@
 <?php
-$page_title = "LET Lab - Admin Login";
+$page_title = "LET Lab - Login";
 include_once 'includes/header.php';
 
-// Check if user is already logged in
 if(isset($_SESSION['loggedin']) && $_SESSION['loggedin'] === true){
     if($_SESSION['role'] === 'admin'){
         header("location: admin_dashboard.php");
     } else {
-        header("location: dashboard.php");
+        header("location: index.php");
     }
     exit;
 }
 
-// Include database and user model
 include_once 'config/database.php';
 include_once 'models/User.php';
 
@@ -28,17 +26,20 @@ if($_SERVER["REQUEST_METHOD"] == "POST"){
     $user->password = trim($_POST["password"]);
     
     if($user->login()){
-        session_start();
+        if (session_status() === PHP_SESSION_NONE) {
+            session_start();
+        }
+        
         $_SESSION["loggedin"] = true;
         $_SESSION["id"] = $user->id;
+        $_SESSION["user_id"] = $user->id; 
         $_SESSION["username"] = $user->username;
         $_SESSION["role"] = $user->role;
         
-        // Redirect based on role
         if($user->role === 'admin'){
             header("location: admin_dashboard.php");
         } else {
-            header("location: dashboard.php");
+            header("location: index.php");
         }
     } else {
         $login_err = "Username atau password salah.";
@@ -48,7 +49,6 @@ if($_SERVER["REQUEST_METHOD"] == "POST"){
 
 <div class="login-wrapper">
     <div class="login-container">
-        <!-- Header dengan Logo dan Judul -->
         <div class="login-header text-center mb-5">
             <div class="login-logo mb-4">
                 <i class="fas fa-graduation-cap"></i>
@@ -56,7 +56,7 @@ if($_SERVER["REQUEST_METHOD"] == "POST"){
             <div class="login-title">
                 <h1 class="main-title">INFORMATION AND LEARNING</h1>
                 <h2 class="sub-title">ENGINEERING TECHNOLOGY</h2>
-                <p class="admin-text">Admin Portal</p>
+                <p class="admin-text">Login Portal</p>
             </div>
         </div>
         
@@ -66,7 +66,6 @@ if($_SERVER["REQUEST_METHOD"] == "POST"){
         }        
         ?>
         
-        <!-- Form Login -->
         <form action="<?php echo htmlspecialchars($_SERVER["PHP_SELF"]); ?>" method="post">
             <div class="mb-4">
                 <label for="username" class="form-label">Username</label>

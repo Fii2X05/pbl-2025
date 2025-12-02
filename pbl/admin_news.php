@@ -15,15 +15,12 @@ $database = new Database();
 $db = $database->getConnection();
 $news = new News($db);
 
-// Variable untuk kontrol tampilan form
 $show_form = false;
 $edit_mode = false;
 $edit_data = null;
 
-// --- HANDLE FORM SUBMISSION (POST) ---
 if($_SERVER["REQUEST_METHOD"] == "POST"){
 
-    // A. TAMBAH NEWS (CREATE)
     if(isset($_POST['add_news'])){
         if(empty($_POST['title']) || empty($_POST['content'])) {
             $error_msg = "Title and Content are required!";
@@ -45,7 +42,6 @@ if($_SERVER["REQUEST_METHOD"] == "POST"){
         }
     }
 
-    // B. UPDATE NEWS
     if(isset($_POST['update_news'])){
         $news->id = $_POST['id'];
         $news->title = $_POST['title'];
@@ -75,14 +71,13 @@ if(isset($_GET['delete_id'])){
     }
 }
 
-// --- HANDLE SHOW FORM (GET) ---
 if(isset($_GET['action'])){
     if($_GET['action'] == 'add'){
         $show_form = true;
+        
     } elseif($_GET['action'] == 'edit' && isset($_GET['id'])){
         $show_form = true;
         $edit_mode = true;
-        // Ambil data news untuk di-edit
         $stmt = $news->read();
         while($row = $stmt->fetch(PDO::FETCH_ASSOC)){
             if($row['id'] == $_GET['id']){
@@ -93,7 +88,6 @@ if(isset($_GET['action'])){
     }
 }
 
-// AMBIL DATA NEWS
 $news_articles = $news->read();
 ?>
 
@@ -153,6 +147,9 @@ $news_articles = $news->read();
             </li>
             <li class="menu-item">
                 <a href="admin_absent.php"><i class="fas fa-clipboard-list me-2"></i><span>Absent</span></a>
+            </li>
+            <li class="menu-item">
+            <a href="admin_guestbook.php"><i class="fas fa-envelope-open-text me-2"></i><span>Guest Book</span></a>
             </li>
         </ul>
     </div>

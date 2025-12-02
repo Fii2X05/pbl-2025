@@ -108,6 +108,9 @@ $active_bookings = $booking->getActiveBookings();
                     <span>Absent</span>
                 </a>
             </li>
+            <li class="menu-item">
+            <a href="admin_guestbook.php"><i class="fas fa-envelope-open-text me-2"></i><span>Guest Book</span></a>
+            </li>
         </ul>
     </div>
 

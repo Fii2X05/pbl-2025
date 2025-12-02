@@ -20,16 +20,20 @@ $database = new Database();
 $db = $database->getConnection();
 $user = new User($db);
 
+// Variable untuk kontrol tampilan form
 $show_form = false;
 $edit_mode = false;
 $edit_data = null;
 
+// --- HANDLE FORM SUBMISSION (POST) ---
 if($_SERVER["REQUEST_METHOD"] == "POST"){
 
+    // A. TAMBAH USER (CREATE)
     if(isset($_POST['add_user'])){
         if(empty($_POST['username']) || empty($_POST['full_name']) || empty($_POST['password'])) {
             $error_msg = "Username, Full Name, and Password are required!";
         } else {
+            // Check if username already exists
             $check_query = "SELECT user_id FROM users WHERE username = :username";
             $check_stmt = $db->prepare($check_query);
             $check_stmt->bindParam(':username', $_POST['username']);
@@ -46,10 +50,11 @@ if($_SERVER["REQUEST_METHOD"] == "POST"){
                 $user->email = $_POST['email'] ?? null;
                 $user->role = $_POST['role'] ?? 'member';
                 
+                // Set student_type based on role
                 if($_POST['role'] == 'member') {
                     $user->student_type = $_POST['student_type'] ?? 'regular';
                 } else {
-                    $user->student_type = null; 
+                    $user->student_type = null; // Set to null for admin and dosen
                 }
                 
                 $user->is_active = isset($_POST['is_active']) ? 1 : 0;
@@ -65,6 +70,7 @@ if($_SERVER["REQUEST_METHOD"] == "POST"){
         }
     }
 
+    // B. UPDATE USER
     if(isset($_POST['update_user'])){
         $user->id = $_POST['user_id'];
         $user->username = $_POST['username'];
@@ -74,14 +80,16 @@ if($_SERVER["REQUEST_METHOD"] == "POST"){
         $user->email = $_POST['email'];
         $user->role = $_POST['role'];
         
+        // Set student_type based on role
         if($_POST['role'] == 'member') {
             $user->student_type = $_POST['student_type'] ?? 'regular';
         } else {
-            $user->student_type = null; 
+            $user->student_type = null; // Set to null for admin and dosen
         }
         
         $user->is_active = isset($_POST['is_active']) ? 1 : 0;
         
+        // Update password only if provided
         if(!empty($_POST['password'])){
             $user->password = password_hash($_POST['password'], PASSWORD_DEFAULT);
         }
@@ -170,9 +178,8 @@ $stats = $stats_stmt->fetch(PDO::FETCH_ASSOC);
             <li class="menu-item">
                 <a href="admin_dashboard.php"><i class="fas fa-tachometer-alt me-2"></i><span>Dashboard</span></a>
             </li>
-            <li class="menu-item active">
-                <a href="admin_users.php"><i class="fas fa-users-cog me-2"></i><span>Users</span></a>
-            </li>
+            <li class="menu-item active"><a href="admin_users.php"><i class="fas fa-users-cog me-2"></i><span>Users</span></a></li>
+
             <li class="menu-item">
                 <a href="admin_partners.php"><i class="fas fa-handshake me-2"></i><span>Partners</span></a>
             </li>
@@ -196,6 +203,9 @@ $stats = $stats_stmt->fetch(PDO::FETCH_ASSOC);
             </li>
             <li class="menu-item">
                 <a href="admin_absent.php"><i class="fas fa-clipboard-list me-2"></i><span>Absent</span></a>
+            </li>
+            <li class="menu-item">
+            <a href="admin_guestbook.php"><i class="fas fa-envelope-open-text me-2"></i><span>Guest Book</span></a>
             </li>
         </ul>
     </div>
@@ -316,9 +326,9 @@ $stats = $stats_stmt->fetch(PDO::FETCH_ASSOC);
                             </div>
 
                             <div class="col-md-6 mb-3">
-                                <label class="form-label">NIM</label>
+                                <label class="form-label">Nomor Induk</label>
                                 <input type="text" class="form-control" name="nim" 
-                                       placeholder="Student ID Number"
+                                       placeholder="General ID Number for lecturer & student"
                                        value="<?php echo $edit_mode ? htmlspecialchars($edit_data['nim']) : ''; ?>">
                             </div>
                         </div>
@@ -399,7 +409,7 @@ $stats = $stats_stmt->fetch(PDO::FETCH_ASSOC);
                                     <th width="5%">#</th>
                                     <th width="15%">Username</th>
                                     <th width="20%">Full Name</th>
-                                    <th width="12%">NIM</th>
+                                    <th width="12%">Nomor Induk</th>
                                     <th width="15%">Email</th>
                                     <th width="10%">Role</th>
                                     <th width="10%">Type</th>
@@ -537,7 +547,7 @@ function toggleStudentType() {
         studentTypeWrapper.style.display = 'none';
         studentTypeSelect.disabled = true;
         studentTypeSelect.required = false;
-        studentTypeSelect.value = 'regular'; 
+        studentTypeSelect.value = 'regular'; // set default
     }
 }
 

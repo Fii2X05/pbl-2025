@@ -2,21 +2,20 @@
 $page_title = "Product Management - Admin";
 include_once 'includes/header.php';
 
-// Check admin session
+// 1. Cek Login Admin
 if(!isset($_SESSION['loggedin']) || $_SESSION['loggedin'] !== true || $_SESSION['role'] !== 'admin'){
     header("location: login.php");
     exit;
 }
 
-// KONEKSI DATABASE & MODEL
 include_once 'config/database.php';
-include_once 'models/Products.php';
+include_once 'models/Products.php'; // Pastikan nama file modelnya benar (Product.php atau Products.php)
 
 $database = new Database();
 $db = $database->getConnection();
 $product = new Product($db);
 
-// Variable untuk kontrol tampilan form
+// Variable Kontrol Tampilan
 $show_form = false;
 $edit_mode = false;
 $edit_data = null;
@@ -30,11 +29,12 @@ if($_SERVER["REQUEST_METHOD"] == "POST"){
             $error_msg = "Product name is required!";
         } else {
             $product->name = $_POST['name'];
-            $product->category = $_POST['category'] ?? '';
             $product->description = $_POST['description'] ?? '';
             $product->price = $_POST['price'] ?? 0;
             $product->image_url = $_POST['image_url'] ?? '';
-            $product->status = $_POST['status'] ?? 'active';
+            $product->link_demo = $_POST['link_demo'] ?? ''; 
+            
+            // Tidak ada lagi category & status karena di DB tidak ada
             
             if($product->create()){
                 $_SESSION['message'] = "Product added successfully!";
@@ -50,11 +50,10 @@ if($_SERVER["REQUEST_METHOD"] == "POST"){
     if(isset($_POST['update_product'])){
         $product->id = $_POST['id'];
         $product->name = $_POST['name'];
-        $product->category = $_POST['category'];
         $product->description = $_POST['description'];
         $product->price = $_POST['price'];
         $product->image_url = $_POST['image_url'];
-        $product->status = $_POST['status'];
+        $product->link_demo = $_POST['link_demo'];
         
         if($product->update()){
             $_SESSION['message'] = "Product updated successfully!";
@@ -76,6 +75,7 @@ if(isset($_GET['delete_id'])){
     }
 }
 
+// --- HANDLE SHOW FORM (GET) ---
 if(isset($_GET['action'])){
     if($_GET['action'] == 'add'){
         $show_form = true;
@@ -96,7 +96,6 @@ if(isset($_GET['action'])){
 $products = $product->read();
 ?>
 
-<!-- Admin Navbar -->
 <nav class="navbar navbar-expand-lg navbar-admin sticky-top">
     <div class="container-fluid">
         <a class="navbar-brand text-white" href="admin_dashboard.php">
@@ -118,69 +117,25 @@ $products = $product->read();
 </nav>
 
 <div class="admin-container">
+    
     <div class="admin-sidebar">
         <div class="sidebar-header">
             <h5 class="mb-0">Navigation</h5>
         </div>
         <ul class="sidebar-menu">
+            <li class="menu-item"><a href="admin_dashboard.php"><i class="fas fa-tachometer-alt me-2"></i><span>Dashboard</span></a></li>
+            <li class="menu-item"><a href="admin_users.php"><i class="fas fa-users-cog me-2"></i><span>Users</span></a></li>
+            <li class="menu-item"><a href="admin_partners.php"><i class="fas fa-handshake me-2"></i><span>Partners</span></a></li>
+            <li class="menu-item"><a href="admin_team.php"><i class="fas fa-users me-2"></i><span>Team</span></a></li>
+            <li class="menu-item active"><a href="admin_products.php"><i class="fas fa-box me-2"></i><span>Products</span></a></li>
+            <li class="menu-item"><a href="admin_news.php"><i class="fas fa-newspaper me-2"></i><span>News</span></a></li>
+            <li class="menu-item"><a href="admin_gallery.php"><i class="fas fa-images me-2"></i><span>Gallery</span></a></li>
+            <li class="menu-item"><a href="admin_activity.php"><i class="fas fa-chart-line me-2"></i><span>Activity</span></a></li>
+            <li class="menu-item"><a href="admin_booking.php"><i class="fas fa-calendar-check me-2"></i><span>Booking</span></a></li>
+            <li class="menu-item"><a href="admin_absent.php"><i class="fas fa-clipboard-list me-2"></i><span>Absent</span></a></li>
             <li class="menu-item">
-                <a href="admin_dashboard.php">
-                    <i class="fas fa-tachometer-alt me-2"></i>
-                    <span>Dashboard</span>
-                </a>
+            <a href="admin_guestbook.php"><i class="fas fa-envelope-open-text me-2"></i><span>Guest Book</span></a>
             </li>
-            <li class="menu-item">
-                <a href="admin_users.php"><i class="fas fa-users-cog me-2"></i><span>Users</span></a>
-            </li>
-            <li class="menu-item">
-                <a href="admin_partners.php">
-                    <i class="fas fa-handshake me-2"></i>
-                    <span>Partners</span>
-                </a>
-            </li>
-            <li class="menu-item">
-                <a href="admin_team.php">
-                    <i class="fas fa-users me-2"></i>
-                    <span>Team</span>
-                </a>
-            </li>
-            <li class="menu-item active">
-                <a href="admin_products.php">
-                    <i class="fas fa-box me-2"></i>
-                    <span>Products</span>
-                </a>
-            </li>
-            <li class="menu-item">
-                <a href="admin_news.php">
-                    <i class="fas fa-newspaper me-2"></i>
-                    <span>News</span>
-                </a>
-            </li>
-            <li class="menu-item">
-                <a href="admin_gallery.php">
-                    <i class="fas fa-images me-2"></i>
-                    <span>Gallery</span>
-                </a>
-            </li>
-            <li class="menu-item">
-                <a href="admin_activity.php">
-                    <i class="fas fa-chart-line me-2"></i>
-                    <span>Activity</span>
-                </a>
-            </li>
-            <li class="menu-item">
-                <a href="admin_booking.php">
-                    <i class="fas fa-calendar-check me-2"></i>
-                    <span>Booking</span>
-                </a>
-            </li>
-            <li class="menu-item">
-                <a href="admin_absent.php">
-                    <i class="fas fa-clipboard-list me-2"></i>
-                    <span>Absent</span>
-                </a>
-            </li>
-
         </ul>
     </div>
 
@@ -189,7 +144,7 @@ $products = $product->read();
             <div class="d-flex justify-content-between align-items-center">
                 <div>
                     <h1 class="h3 mb-0 text-gray-800">Product Management</h1>
-                    <p class="text-muted small">Manage your products and services</p>
+                    <p class="text-muted small">Manage your products, software, and services</p>
                 </div>
                 <?php if(!$show_form): ?>
                     <a href="admin_products.php?action=add" class="btn btn-primary">
@@ -220,7 +175,6 @@ $products = $product->read();
         <?php endif; ?>
 
         <?php if($show_form): ?>
-            <!-- FORM ADD/EDIT PRODUCT -->
             <div class="card border-0 shadow-sm mb-4">
                 <div class="card-header bg-<?php echo $edit_mode ? 'warning' : 'primary'; ?> text-white py-3">
                     <h5 class="card-title mb-0">
@@ -234,24 +188,11 @@ $products = $product->read();
                             <input type="hidden" name="id" value="<?php echo $edit_data['id']; ?>">
                         <?php endif; ?>
 
-                        <div class="row">
-                            <div class="col-md-8 mb-3">
-                                <label class="form-label fw-bold">Product Name *</label>
-                                <input type="text" class="form-control" name="name" required 
-                                       placeholder="e.g. Viat Map Application"
-                                       value="<?php echo $edit_mode ? htmlspecialchars($edit_data['name']) : ''; ?>">
-                            </div>
-                            
-                            <div class="col-md-4 mb-3">
-                                <label class="form-label fw-bold">Category</label>
-                                <select class="form-select" name="category">
-                                    <option value="Software" <?php echo ($edit_mode && $edit_data['category'] == 'Software') ? 'selected' : ''; ?>>Software</option>
-                                    <option value="Hardware" <?php echo ($edit_mode && $edit_data['category'] == 'Hardware') ? 'selected' : ''; ?>>Hardware</option>
-                                    <option value="Service" <?php echo ($edit_mode && $edit_data['category'] == 'Service') ? 'selected' : ''; ?>>Service</option>
-                                    <option value="Research" <?php echo ($edit_mode && $edit_data['category'] == 'Research') ? 'selected' : ''; ?>>Research</option>
-                                    <option value="Other" <?php echo ($edit_mode && $edit_data['category'] == 'Other') ? 'selected' : ''; ?>>Other</option>
-                                </select>
-                            </div>
+                        <div class="mb-3">
+                            <label class="form-label fw-bold">Product Name *</label>
+                            <input type="text" class="form-control" name="name" required 
+                                   placeholder="e.g. Viat Map Application"
+                                   value="<?php echo $edit_mode ? htmlspecialchars($edit_data['name']) : ''; ?>">
                         </div>
 
                         <div class="mb-3">
@@ -264,21 +205,12 @@ $products = $product->read();
                             <div class="col-md-4 mb-3">
                                 <label class="form-label">Price</label>
                                 <div class="input-group">
-                                    <span class="input-group-text">$</span>
+                                    <span class="input-group-text">Rp</span>
                                     <input type="number" class="form-control" name="price" step="0.01" 
-                                           placeholder="0.00"
+                                           placeholder="0"
                                            value="<?php echo $edit_mode ? htmlspecialchars($edit_data['price']) : ''; ?>">
                                 </div>
-                                <small class="form-text text-muted">Leave 0 for free products</small>
-                            </div>
-
-                            <div class="col-md-4 mb-3">
-                                <label class="form-label">Status</label>
-                                <select class="form-select" name="status">
-                                    <option value="active" <?php echo ($edit_mode && $edit_data['status'] == 'active') ? 'selected' : ''; ?>>Active</option>
-                                    <option value="inactive" <?php echo ($edit_mode && $edit_data['status'] == 'inactive') ? 'selected' : ''; ?>>Inactive</option>
-                                    <option value="coming_soon" <?php echo ($edit_mode && $edit_data['status'] == 'coming_soon') ? 'selected' : ''; ?>>Coming Soon</option>
-                                </select>
+                                <small class="form-text text-muted">Isi 0 jika gratis</small>
                             </div>
 
                             <div class="col-md-4 mb-3">
@@ -286,6 +218,16 @@ $products = $product->read();
                                 <input type="url" class="form-control" name="image_url" 
                                        placeholder="https://example.com/image.jpg"
                                        value="<?php echo $edit_mode ? htmlspecialchars($edit_data['image_url']) : ''; ?>">
+                            </div>
+
+                             <div class="col-md-4 mb-3">
+                                <label class="form-label fw-bold">Download Link (Optional)</label>
+                                <div class="input-group">
+                                    <span class="input-group-text"><i class="fas fa-download"></i></span>
+                                    <input type="url" class="form-control" name="link_demo" 
+                                           placeholder="https://drive.google.com/..."
+                                           value="<?php echo $edit_mode ? htmlspecialchars($edit_data['link_demo']) : ''; ?>">
+                                </div>
                             </div>
                         </div>
 
@@ -303,7 +245,6 @@ $products = $product->read();
                 </div>
             </div>
         <?php else: ?>
-            <!-- PRODUCT LIST TABLE -->
             <div class="card border-0 shadow-sm">
                 <div class="card-header bg-white py-3">
                     <h5 class="card-title mb-0">Products List</h5>
@@ -316,9 +257,8 @@ $products = $product->read();
                                     <th>#</th>
                                     <th>Image</th>
                                     <th>Product Name</th>
-                                    <th>Category</th>
                                     <th>Price</th>
-                                    <th>Status</th>
+                                    <th>Download</th>
                                     <th class="text-end">Actions</th>
                                 </tr>
                             </thead>
@@ -348,28 +288,23 @@ $products = $product->read();
                                             <?php endif; ?>
                                         </td>
                                         <td>
-                                            <span class="badge bg-info text-dark">
-                                                <?php echo htmlspecialchars($row['category']); ?>
-                                            </span>
-                                        </td>
-                                        <td>
                                             <?php if($row['price'] > 0): ?>
-                                                <strong class="text-success">$<?php echo number_format($row['price'], 2); ?></strong>
+                                                <strong class="text-success">Rp <?php echo number_format($row['price'], 0, ',', '.'); ?></strong>
                                             <?php else: ?>
                                                 <span class="badge bg-success">Free</span>
                                             <?php endif; ?>
                                         </td>
-                                        <td>
-                                            <?php 
-                                            $badge_class = 'secondary';
-                                            if($row['status'] == 'active') $badge_class = 'success';
-                                            elseif($row['status'] == 'coming_soon') $badge_class = 'warning';
-                                            ?>
-                                            <span class="badge bg-<?php echo $badge_class; ?>">
-                                                <?php echo ucfirst(str_replace('_', ' ', $row['status'])); ?>
-                                            </span>
-                                        </td>
                                         
+                                        <td>
+                                            <?php if(!empty($row['link_demo'])): ?>
+                                                <a href="<?php echo htmlspecialchars($row['link_demo']); ?>" target="_blank" class="btn btn-sm btn-outline-primary" title="Download">
+                                                    <i class="fas fa-download"></i> Link
+                                                </a>
+                                            <?php else: ?>
+                                                <span class="text-muted">-</span>
+                                            <?php endif; ?>
+                                        </td>
+
                                         <td class="text-end">
                                             <div class="btn-group">
                                                 <a href="admin_products.php?action=edit&id=<?php echo $row['id']; ?>" 
@@ -388,7 +323,7 @@ $products = $product->read();
                                     <?php endwhile; ?>
                                 <?php else: ?>
                                     <tr>
-                                        <td colspan="7" class="text-center py-5 text-muted">
+                                        <td colspan="6" class="text-center py-5 text-muted">
                                             <i class="fas fa-box-open fa-3x mb-3 d-block"></i>
                                             <h5>No Products Yet</h5>
                                             <p>Click "Add Product" to add your first product.</p>

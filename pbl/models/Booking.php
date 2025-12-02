@@ -20,6 +20,38 @@ class Booking {
         $this->conn = $db;
     }
 
+    public function create() {
+        $query = "INSERT INTO " . $this->table_name . " 
+                  (borrower_name, borrower_contact, borrower_email, institution, 
+                   asset_id, qty, start_time, end_time, status) 
+                  VALUES (:name, :contact, :email, :inst, :asset, :qty, :start, :end, 'pending')";
+
+        $stmt = $this->conn->prepare($query);
+
+        $this->borrower_name = htmlspecialchars(strip_tags($this->borrower_name));
+        $this->borrower_contact = htmlspecialchars(strip_tags($this->borrower_contact));
+        $this->borrower_email = htmlspecialchars(strip_tags($this->borrower_email));
+        $this->institution = htmlspecialchars(strip_tags($this->institution));
+        $this->asset_id = htmlspecialchars(strip_tags($this->asset_id));
+        $this->qty = htmlspecialchars(strip_tags($this->qty));
+        $this->start_time = htmlspecialchars(strip_tags($this->start_time));
+        $this->end_time = htmlspecialchars(strip_tags($this->end_time));
+
+        $stmt->bindParam(':name', $this->borrower_name);
+        $stmt->bindParam(':contact', $this->borrower_contact);
+        $stmt->bindParam(':email', $this->borrower_email);
+        $stmt->bindParam(':inst', $this->institution);
+        $stmt->bindParam(':asset', $this->asset_id);
+        $stmt->bindParam(':qty', $this->qty);
+        $stmt->bindParam(':start', $this->start_time);
+        $stmt->bindParam(':end', $this->end_time);
+
+        if($stmt->execute()) {
+            return true;
+        }
+        return false;
+    }
+
     public function getAllBookings() {
         $query = "SELECT l.loan_id as id, 
                          l.borrower_name, 

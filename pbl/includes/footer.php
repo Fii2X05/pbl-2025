@@ -1,8 +1,6 @@
-<!-- Footer dengan Ikon -->
 <footer class="footer">
     <div class="container">
         <div class="row">
-            <!-- Left Column - INFORMATION AND LEARNING -->
             <div class="col-lg-6 mb-4">
                 <div class="footer-brand mb-3">
                     <h4 class="fw-bold mb-1">INFORMATION AND LEARNING</h4>
@@ -33,7 +31,7 @@
                         <ul class="list-unstyled footer-menu">
                             <li><a href="index.php#activities" class="text-white"><i class="fas fa-chart-line me-1"></i>Activity</a></li>
                             <li><a href="index.php#contact" class="text-white"><i class="fas fa-envelope me-1"></i>Contact</a></li>
-                            <li><a href="booking.php" class="text-white"><i class="fas fa-calendar-check me-1"></i>Booking</a></li>
+                            <li><a href="visitor_booking.php" class="text-white"><i class="fas fa-calendar-check me-1"></i>Booking</a></li>
                             <li><a href="login.php" class="text-white"><i class="fas fa-sign-in-alt me-1"></i>Login</a></li>
                         </ul>
                     </div>
@@ -76,4 +74,6 @@
             </div>
         </div>
     </div>
+<script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.2/dist/js/bootstrap.bundle.min.js"></script>
+
 </footer>

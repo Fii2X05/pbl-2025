@@ -15,15 +15,12 @@ $database = new Database();
 $db = $database->getConnection();
 $attendance = new Attendance($db);
 
-// Variable untuk kontrol tampilan form
 $show_form = false;
 $edit_mode = false;
 $edit_data = null;
 
-// --- HANDLE FORM SUBMISSION (POST) ---
 if($_SERVER["REQUEST_METHOD"] == "POST"){
 
-    // A. TAMBAH ATTENDANCE (CREATE)
     if(isset($_POST['add_attendance'])){
         if(empty($_POST['user_id']) || empty($_POST['date'])) {
             $error_msg = "User and Date are required!";
@@ -45,7 +42,6 @@ if($_SERVER["REQUEST_METHOD"] == "POST"){
         }
     }
 
-    // B. UPDATE ATTENDANCE
     if(isset($_POST['update_attendance'])){
         $attendance->id = $_POST['log_id'];
         $attendance->user_id = $_POST['user_id'];
@@ -93,10 +89,8 @@ if(isset($_GET['action'])){
     }
 }
 
-// AMBIL DATA ATTENDANCE
 $attendance_logs = $attendance->read();
 
-// AMBIL DATA USERS untuk dropdown
 $user_query = "SELECT user_id, full_name, nim FROM users WHERE role = 'member' AND is_active = true ORDER BY full_name";
 $user_stmt = $db->prepare($user_query);
 $user_stmt->execute();
@@ -195,6 +189,9 @@ function getAttendanceStatus($check_in_time) {
             </li>
             <li class="menu-item active">
                 <a href="admin_absent.php"><i class="fas fa-clipboard-list me-2"></i><span>Absent</span></a>
+            </li>
+            <li class="menu-item">
+            <a href="admin_guestbook.php"><i class="fas fa-envelope-open-text me-2"></i><span>Guest Book</span></a>
             </li>
         </ul>
     </div>
@@ -373,6 +370,17 @@ function getAttendanceStatus($check_in_time) {
                                         $status = getAttendanceStatus($log['check_in_time']);
                                     ?>
                                     <tr>
+                                        <td>
+                                        <?php if(!empty($row['photo_url'])): ?>
+                                            <img src="<?php echo htmlspecialchars($row['photo_url']); ?>" 
+                                                alt="Bukti" 
+                                                class="rounded border"
+                                                style="width: 50px; height: 50px; object-fit: cover; cursor: pointer;"
+                                                onclick="window.open('<?php echo htmlspecialchars($row['photo_url']); ?>', '_blank')">
+                                        <?php else: ?>
+                                            <span class="text-muted small">-</span>
+                                        <?php endif; ?>
+                                    </td>
                                         <td><?php echo $log['id']; ?></td>
                                         <td>
                                             <strong class="d-block"><?php echo htmlspecialchars($log['name']); ?></strong>

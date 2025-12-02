@@ -72,14 +72,12 @@ if(isset($_GET['delete_id'])){
     }
 }
 
-// --- HANDLE SHOW FORM (GET) ---
 if(isset($_GET['action'])){
     if($_GET['action'] == 'add'){
         $show_form = true;
     } elseif($_GET['action'] == 'edit' && isset($_GET['id'])){
         $show_form = true;
         $edit_mode = true;
-        // Ambil data gallery untuk di-edit
         $stmt = $gallery->read();
         while($row = $stmt->fetch(PDO::FETCH_ASSOC)){
             if($row['id'] == $_GET['id']){
@@ -90,7 +88,6 @@ if(isset($_GET['action'])){
     }
 }
 
-// AMBIL DATA GALLERY
 $gallery_items = $gallery->read();
 ?>
 
@@ -132,6 +129,7 @@ $gallery_items = $gallery->read();
             <li class="menu-item"><a href="admin_activity.php"><i class="fas fa-chart-line me-2"></i><span>Activity</span></a></li>
             <li class="menu-item"><a href="admin_booking.php"><i class="fas fa-calendar-check me-2"></i><span>Booking</span></a></li>
             <li class="menu-item"><a href="admin_absent.php"><i class="fas fa-clipboard-list me-2"></i><span>Absent</span></a></li>
+            <li class="menu-item"><a href="admin_guestbook.php"><i class="fas fa-envelope-open-text me-2"></i><span>Guest Book</span></a></li>
         </ul>
     </div>
 
@@ -220,14 +218,6 @@ $gallery_items = $gallery->read();
                                        value="<?php echo $edit_mode ? htmlspecialchars($edit_data['image_url']) : ''; ?>">
                                 <small class="form-text text-muted">Enter the full URL of the image</small>
                             </div>
-
-                            <div class="col-md-4 mb-3">
-                                <label class="form-label">Status</label>
-                                <select class="form-select" name="status">
-                                    <option value="active" <?php echo ($edit_mode && $edit_data['status'] == 'active') ? 'selected' : ''; ?>>Active</option>
-                                    <option value="inactive" <?php echo ($edit_mode && $edit_data['status'] == 'inactive') ? 'selected' : ''; ?>>Inactive</option>
-                                </select>
-                            </div>
                         </div>
 
                         <?php if($edit_mode && !empty($edit_data['image_url'])): ?>
@@ -306,12 +296,6 @@ $gallery_items = $gallery->read();
                                                 <?php echo strlen($item['description']) > 80 ? '...' : ''; ?>
                                             </p>
                                         <?php endif; ?>
-                                        <div class="gallery-meta">
-                                            <span class="badge bg-info"><?php echo ucfirst($item['category']); ?></span>
-                                            <span class="badge bg-<?php echo $item['status'] == 'active' ? 'success' : 'secondary'; ?>">
-                                                <?php echo ucfirst($item['status']); ?>
-                                            </span>
-                                        </div>
                                     </div>
                                 </div>
                             </div>
@@ -331,7 +315,6 @@ $gallery_items = $gallery->read();
 </div>
 
 <script>
-// Category filter functionality
 document.addEventListener('DOMContentLoaded', function() {
     const categoryFilter = document.getElementById('categoryFilter');
     if(categoryFilter) {

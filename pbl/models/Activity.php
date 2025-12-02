@@ -1,9 +1,8 @@
 <?php
 class Activity {
     private $conn;
-    private $table_name = "activities"; // Sesuai tabel baru di SQL
-
-    // Properti sesuai kolom tabel activities
+    private $table_name = "activities"; 
+    
     public $activity_id;
     public $activity_type;
     public $title;
@@ -12,19 +11,18 @@ class Activity {
     public $activity_date;
     public $location;
     public $status;
+    public $link; // PROPERTI BARU
     public $created_at;
     public $updated_at;
 
-    // Properti tambahan untuk join (nama user)
     public $username;
 
     public function __construct($db) {
         $this->conn = $db;
     }
 
-    // 1. READ (Ambil Data)
     public function read() {
-        // Join dengan tabel users untuk mengambil nama pembuat activity
+        // Tambahkan kolom 'link' di query SELECT
         $query = "SELECT a.*, u.username 
                   FROM " . $this->table_name . " a
                   LEFT JOIN users u ON a.user_id = u.user_id
@@ -35,11 +33,11 @@ class Activity {
         return $stmt;
     }
 
-    // 2. CREATE (Tambah Data)
     public function create() {
+        // Tambahkan kolom 'link' di query INSERT
         $query = "INSERT INTO " . $this->table_name . " 
-                  (activity_type, title, description, user_id, activity_date, location, status) 
-                  VALUES (:type, :title, :desc, :uid, :date, :loc, :status)";
+                  (activity_type, title, description, user_id, activity_date, location, status, link) 
+                  VALUES (:type, :title, :desc, :uid, :date, :loc, :status, :link)";
 
         $stmt = $this->conn->prepare($query);
 
@@ -51,6 +49,7 @@ class Activity {
         $this->activity_date = htmlspecialchars(strip_tags($this->activity_date));
         $this->location = htmlspecialchars(strip_tags($this->location));
         $this->status = htmlspecialchars(strip_tags($this->status));
+        $this->link = htmlspecialchars(strip_tags($this->link));
 
         // Bind
         $stmt->bindParam(':type', $this->activity_type);
@@ -60,6 +59,7 @@ class Activity {
         $stmt->bindParam(':date', $this->activity_date);
         $stmt->bindParam(':loc', $this->location);
         $stmt->bindParam(':status', $this->status);
+        $stmt->bindParam(':link', $this->link);
 
         if($stmt->execute()) {
             return true;
@@ -67,8 +67,8 @@ class Activity {
         return false;
     }
 
-    // 3. UPDATE (Edit Data)
     public function update() {
+        // Tambahkan kolom 'link' di query UPDATE
         $query = "UPDATE " . $this->table_name . " 
                   SET activity_type = :type,
                       title = :title, 
@@ -76,6 +76,7 @@ class Activity {
                       activity_date = :date, 
                       location = :loc, 
                       status = :status,
+                      link = :link,
                       updated_at = CURRENT_TIMESTAMP
                   WHERE activity_id = :id";
 
@@ -88,6 +89,7 @@ class Activity {
         $stmt->bindParam(':date', $this->activity_date);
         $stmt->bindParam(':loc', $this->location);
         $stmt->bindParam(':status', $this->status);
+        $stmt->bindParam(':link', $this->link);
         $stmt->bindParam(':id', $this->activity_id);
 
         if($stmt->execute()) {
@@ -96,7 +98,6 @@ class Activity {
         return false;
     }
 
-    // 4. DELETE (Hapus Data)
     public function delete() {
         $query = "DELETE FROM " . $this->table_name . " WHERE activity_id = :id";
         $stmt = $this->conn->prepare($query);

@@ -161,6 +161,37 @@ class Attendance {
         
         return $stmt->fetch(PDO::FETCH_ASSOC);
     }
+    // --- FUNGSI PRESENSI MAHASISWA (UPDATE FOTO) ---
+    public function checkIn() {
+        // 1. Cek apakah hari ini sudah absen?
+        $queryCheck = "SELECT log_id FROM " . $this->table_name . " 
+                       WHERE user_id = :uid AND date = CURRENT_DATE";
+        $stmtCheck = $this->conn->prepare($queryCheck);
+        $stmtCheck->bindParam(':uid', $this->user_id);
+        $stmtCheck->execute();
+
+        if($stmtCheck->rowCount() > 0){
+            return "already_checked_in"; 
+        }
+
+        $query = "INSERT INTO " . $this->table_name . " 
+                  (user_id, date, check_in_time, location_note, photo_url, status) 
+                  VALUES (:uid, CURRENT_DATE, CURRENT_TIME, :note, :photo, 'Hadir')";
+
+        $stmt = $this->conn->prepare($query);
+
+        $this->location_note = htmlspecialchars(strip_tags($this->location_note));
+        $this->photo_url = htmlspecialchars(strip_tags($this->photo_url));
+
+        $stmt->bindParam(':uid', $this->user_id);
+        $stmt->bindParam(':note', $this->location_note);
+        $stmt->bindParam(':photo', $this->photo_url);
+
+        if($stmt->execute()) {
+            return "success";
+        }
+        return "failed";
+    }
 
     public function getTotalToday() {
         $today = date('Y-m-d');
