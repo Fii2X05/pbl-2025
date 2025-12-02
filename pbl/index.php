@@ -239,7 +239,7 @@ if(file_exists('models/Activity.php')){
         </div>
         
         <div class="text-center mt-4">
-            <a href="daftar_team.php" class="btn btn-outline-primary">
+            <a href="daftar_team.php" class="btn btn-outline-primary px-4 rounded-pill  ">
                 <i class="fas fa-users me-2"></i>Lihat Semua Tim
             </a>
         </div>
@@ -390,7 +390,7 @@ if(file_exists('models/Activity.php')){
         </div>
 
         <div class="text-center mt-4">
-            <a href="news_detail.php" class="btn btn-outline-primary">Lihat Semua Berita</a>
+            <a href="news_detail.php" class="btn btn-outline-primary px-4 rounded-pill">Lihat Semua Berita</a>
         </div>
     </div>
 </section>
@@ -488,7 +488,7 @@ $recent_activities = $activity_model->read();
         </div>
 
         <div class="text-center mt-4">
-            <a href="activities.php" class="btn btn-outline-primary">
+            <a href="activities.php" class="btn btn-outline-primary px-4 rounded-pill">
                 Lihat Semua Aktivitas <i class="fas fa-arrow-right ms-2"></i>
             </a>
         </div>
@@ -512,6 +512,42 @@ $recent_activities = $activity_model->read();
 
 
 <script>
+function showProductModal(id) {
+    var title = document.getElementById('prod-title-' + id).innerHTML;
+    var desc = document.getElementById('prod-desc-' + id).innerHTML;
+    var img = document.getElementById('prod-img-' + id).textContent;
+    var link = document.getElementById('prod-link-' + id).textContent;
+    var cat = document.getElementById('prod-cat-' + id).textContent;
+    var price = document.getElementById('prod-price-' + id).textContent;
+
+    document.getElementById('modalProdTitle').textContent = title;
+    document.getElementById('modalProdDesc').innerHTML = desc;
+    document.getElementById('modalProdCat').textContent = cat;
+    document.getElementById('modalProdPrice').textContent = price;
+
+    var imgElem = document.getElementById('modalProdImg');
+    if (img && img.trim() !== '') {
+        imgElem.src = img;
+        imgElem.style.display = 'inline-block';
+    } else {
+        imgElem.style.display = 'none';
+    }
+
+    var btnLink = document.getElementById('modalProdLink');
+    var btnNoLink = document.getElementById('modalProdNoLink');
+
+    if (link && link.trim() !== '') {
+        btnLink.href = link;
+        btnLink.style.display = 'block';
+        btnNoLink.style.display = 'none';
+    } else {
+        btnLink.style.display = 'none';
+        btnNoLink.style.display = 'block';
+    }
+
+    var myModal = new bootstrap.Modal(document.getElementById('productModal'));
+    myModal.show();
+}
 document.addEventListener('DOMContentLoaded', function() {
     const videoModalHome = document.getElementById('videoModalHome');
     const homeVideoFrame = document.getElementById('homeVideoFrame');
@@ -565,7 +601,7 @@ document.addEventListener('DOMContentLoaded', function() {
 </style>
 
 
-<section id="store" class="py-5 bg-light">
+<section id="store" class="py-5">
     <div class="container">
         <div class="row mb-5">
             <div class="col-lg-8 mx-auto text-center">
@@ -573,15 +609,21 @@ document.addEventListener('DOMContentLoaded', function() {
                 <p class="text-muted">Inovasi teknologi pembelajaran hasil riset kami.</p>
             </div>
         </div>
-
+        
         <div class="row">
             <?php 
             $count = 0;
             if($products && $products->rowCount() > 0):
+                // Reset pointer data
+                $products->execute();
                 while($prod = $products->fetch(PDO::FETCH_ASSOC)): 
+                    // Gunakan ?? untuk mencegah error jika kolom tidak ada
                     $status = $prod['status'] ?? 'active';
+                    $category = $prod['category'] ?? 'App';
+                    
                     if($status == 'active' && $count < 4):
                         $count++;
+                        $prod_id = $prod['id'];
             ?>
             <div class="col-md-6 col-lg-3 mb-4">
                 <div class="card h-100 shadow-sm border-0 product-card">
@@ -589,16 +631,14 @@ document.addEventListener('DOMContentLoaded', function() {
                         <?php if(!empty($prod['image_url'])): ?>
                             <img src="<?php echo htmlspecialchars($prod['image_url']); ?>" 
                                  class="card-img-top" 
-                                 alt="<?php echo htmlspecialchars($prod['name']); ?>"
                                  style="height: 180px; object-fit: cover;">
                         <?php else: ?>
                             <div class="bg-white d-flex align-items-center justify-content-center border-bottom" style="height: 180px;">
                                 <i class="fas fa-cube fa-3x text-muted opacity-25"></i>
                             </div>
                         <?php endif; ?>
-                        
                         <span class="badge bg-primary position-absolute top-0 start-0 m-3 shadow-sm">
-                            <?php echo htmlspecialchars($prod['category'] ?? 'App'); ?>
+                            <?php echo htmlspecialchars($category); ?>
                         </span>
                     </div>
 
@@ -611,6 +651,15 @@ document.addEventListener('DOMContentLoaded', function() {
                             <?php echo htmlspecialchars(substr($prod['description'] ?? '', 0, 80)); ?>...
                         </p>
                         
+                        <div id="prod-desc-<?php echo $prod_id; ?>" class="d-none"><?php echo nl2br(htmlspecialchars($prod['description'] ?? '')); ?></div>
+                        <div id="prod-title-<?php echo $prod_id; ?>" class="d-none"><?php echo htmlspecialchars($prod['name']); ?></div>
+                        <div id="prod-img-<?php echo $prod_id; ?>" class="d-none"><?php echo htmlspecialchars($prod['image_url'] ?? ''); ?></div>
+                        <div id="prod-link-<?php echo $prod_id; ?>" class="d-none"><?php echo htmlspecialchars($prod['link_demo'] ?? ''); ?></div>
+                        <div id="prod-cat-<?php echo $prod_id; ?>" class="d-none"><?php echo htmlspecialchars($category); ?></div>
+                        <div id="prod-price-<?php echo $prod_id; ?>" class="d-none">
+                            <?php echo (isset($prod['price']) && $prod['price'] > 0) ? 'Rp ' . number_format($prod['price'], 0, ',', '.') : 'Gratis'; ?>
+                        </div>
+
                         <div class="d-flex justify-content-between align-items-center mt-auto pt-3 border-top">
                             <div>
                                 <?php if(isset($prod['price']) && $prod['price'] > 0): ?>
@@ -620,32 +669,87 @@ document.addEventListener('DOMContentLoaded', function() {
                                 <?php endif; ?>
                             </div>
                             
-                            <?php if(!empty($prod['link_demo'])): ?>
-                                <a href="<?php echo htmlspecialchars($prod['link_demo']); ?>" target="_blank" class="btn btn-sm btn-outline-primary rounded-pill px-3">
-                                    <i class="fas fa-download me-1"></i> Get
-                                </a>
-                            <?php else: ?>
-                                <button class="btn btn-sm btn-light rounded-pill px-3" disabled>Detail</button>
-                            <?php endif; ?>
+                            <button class="btn btn-sm btn-outline-primary rounded-pill px-3" 
+                                    onclick="showProductModal(<?php echo $prod_id; ?>)">
+                                Detail
+                            </button>
                         </div>
                     </div>
                 </div>
             </div>
-            <?php 
-                    endif;
-                endwhile; 
-            else:
-            ?>
-                <div class="col-12 text-center py-5">
-                    <div class="text-muted">
-                        <i class="fas fa-box-open fa-3x mb-3 opacity-50"></i>
-                        <p>Belum ada produk yang ditampilkan.</p>
-                    </div>
-                </div>
+            <?php endif; endwhile; else: ?>
+                <div class="col-12 text-center py-5"><p class="text-muted">Belum ada produk yang ditampilkan.</p></div>
             <?php endif; ?>
+        </div>
+        <div class="text-center mt-4">
+            <a href="#" class="btn btn-outline-primary px-4 rounded-pill">Lihat Semua Produk <i class="fas fa-arrow-right ms-2"></i></a>
         </div>
     </div>
 </section>
+
+<div class="modal fade" id="productModal" tabindex="-1" aria-hidden="true">
+    <div class="modal-dialog modal-dialog-centered">
+        <div class="modal-content border-0 shadow-lg">
+            <div class="modal-header border-0">
+                <h5 class="modal-title fw-bold text-primary">Detail Produk</h5>
+                <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Close"></button>
+            </div>
+            <div class="modal-body text-center px-4 pb-4">
+                <img id="modalProdImg" src="" class="img-fluid rounded mb-3 shadow-sm" style="max-height: 250px; object-fit: contain; display: none;">
+                
+                <h3 class="fw-bold text-dark mb-1" id="modalProdTitle"></h3>
+                
+                <div class="mb-3">
+                    <span class="badge bg-info text-dark me-1" id="modalProdCat"></span>
+                    <span class="badge bg-success" id="modalProdPrice"></span>
+                </div>
+                
+                <div class="text-muted text-start bg-light p-3 rounded mb-4" id="modalProdDesc" style="font-size: 0.95rem; line-height: 1.6;"></div>
+
+                <a href="#" id="modalProdLink" target="_blank" class="btn btn-primary btn-lg w-100 rounded-pill shadow-sm">
+                    <i class="fas fa-download me-2"></i> Download / Kunjungi
+                </a>
+                <button id="modalProdNoLink" class="btn btn-secondary btn-lg w-100 rounded-pill" disabled style="display: none;">
+                    Tidak Tersedia
+                </button>
+            </div>
+        </div>
+    </div>
+</div>
+
+
+<div class="modal fade" id="productModal" tabindex="-1" aria-hidden="true">
+    <div class="modal-dialog modal-dialog-centered">
+        <div class="modal-content border-0 shadow-lg">
+            <div class="modal-header border-0">
+                <h5 class="modal-title fw-bold text-primary">Detail Produk</h5>
+                <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Close"></button>
+            </div>
+            <div class="modal-body text-center px-4 pb-4">
+                <img id="modalProdImg" src="" class="img-fluid rounded mb-3 shadow-sm" style="max-height: 250px; object-fit: contain; display: none;">
+                
+                <h3 class="fw-bold text-dark mb-1" id="modalProdTitle">Nama Produk</h3>
+                
+                <div class="mb-3">
+                    <span class="badge bg-info text-dark me-1" id="modalProdCat">Kategori</span>
+                    <span class="badge bg-success" id="modalProdPrice">Harga</span>
+                </div>
+                
+                <div class="text-muted text-start bg-light p-3 rounded mb-4" id="modalProdDesc" style="font-size: 0.95rem; line-height: 1.6;">
+                    </div>
+
+                <a href="#" id="modalProdLink" target="_blank" class="btn btn-primary btn-lg w-100 rounded-pill shadow-sm">
+                    <i class="fas fa-download me-2"></i> Download / Kunjungi
+                </a>
+                <button id="modalProdNoLink" class="btn btn-secondary btn-lg w-100 rounded-pill" disabled style="display: none;">
+                    Tidak Tersedia
+                </button>
+            </div>
+        </div>
+    </div>
+</div>
+
+
 
 <style>
     .product-card {

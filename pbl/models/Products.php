@@ -3,21 +3,30 @@ class Product {
     private $conn;
     private $table_name = "products";
 
-    // Properti (Hanya yang ada di database)
-    public $id;          // product_id
-    public $name;        // name
-    public $description; // description
-    public $image_url;   // image_url
-    public $link_demo;   // link_demo
-    public $price;       // price
+    public $id;
+    public $name;
+    public $description;
+    public $image_url;
+    public $link_demo;
+    public $price;
+    public $category; // Kolom Baru
+    public $status;   // Kolom Baru
 
     public function __construct($db) {
         $this->conn = $db;
     }
 
-    // 1. READ
+    // 1. READ (Ambil data termasuk category & status)
     public function read() {
-        $query = "SELECT product_id as id, name, description, image_url, link_demo, price 
+        $query = "SELECT 
+                    product_id as id,
+                    name, 
+                    description, 
+                    image_url, 
+                    link_demo, 
+                    price,
+                    category,
+                    status
                   FROM " . $this->table_name . " 
                   ORDER BY product_id DESC";
 
@@ -28,10 +37,9 @@ class Product {
 
     // 2. CREATE
     public function create() {
-        // Hanya memasukkan kolom yang benar-benar ada di DB
         $query = "INSERT INTO " . $this->table_name . " 
-                  (name, description, image_url, link_demo, price) 
-                  VALUES (:name, :desc, :img, :link, :price)";
+                  (name, description, image_url, link_demo, price, category, status) 
+                  VALUES (:name, :desc, :img, :link, :price, :cat, :stat)";
 
         $stmt = $this->conn->prepare($query);
 
@@ -41,6 +49,8 @@ class Product {
         $this->image_url = htmlspecialchars(strip_tags($this->image_url));
         $this->link_demo = htmlspecialchars(strip_tags($this->link_demo));
         $this->price = htmlspecialchars(strip_tags($this->price));
+        $this->category = htmlspecialchars(strip_tags($this->category));
+        $this->status = htmlspecialchars(strip_tags($this->status));
 
         // Bind
         $stmt->bindParam(':name', $this->name);
@@ -48,6 +58,8 @@ class Product {
         $stmt->bindParam(':img', $this->image_url);
         $stmt->bindParam(':link', $this->link_demo);
         $stmt->bindParam(':price', $this->price);
+        $stmt->bindParam(':cat', $this->category);
+        $stmt->bindParam(':stat', $this->status);
 
         if($stmt->execute()) {
             return true;
@@ -62,25 +74,30 @@ class Product {
                       description = :desc, 
                       image_url = :img, 
                       link_demo = :link,
-                      price = :price
+                      price = :price,
+                      category = :cat,
+                      status = :stat
                   WHERE product_id = :id";
 
         $stmt = $this->conn->prepare($query);
 
-        // Sanitize
+        // Sanitize & Bind
         $this->name = htmlspecialchars(strip_tags($this->name));
         $this->description = htmlspecialchars(strip_tags($this->description));
         $this->image_url = htmlspecialchars(strip_tags($this->image_url));
         $this->link_demo = htmlspecialchars(strip_tags($this->link_demo));
         $this->price = htmlspecialchars(strip_tags($this->price));
+        $this->category = htmlspecialchars(strip_tags($this->category));
+        $this->status = htmlspecialchars(strip_tags($this->status));
         $this->id = htmlspecialchars(strip_tags($this->id));
 
-        // Bind
         $stmt->bindParam(':name', $this->name);
         $stmt->bindParam(':desc', $this->description);
         $stmt->bindParam(':img', $this->image_url);
         $stmt->bindParam(':link', $this->link_demo);
         $stmt->bindParam(':price', $this->price);
+        $stmt->bindParam(':cat', $this->category);
+        $stmt->bindParam(':stat', $this->status);
         $stmt->bindParam(':id', $this->id);
 
         if($stmt->execute()) {
@@ -93,13 +110,9 @@ class Product {
     public function delete() {
         $query = "DELETE FROM " . $this->table_name . " WHERE product_id = :id";
         $stmt = $this->conn->prepare($query);
-        
         $this->id = htmlspecialchars(strip_tags($this->id));
         $stmt->bindParam(':id', $this->id);
-
-        if($stmt->execute()) {
-            return true;
-        }
+        if($stmt->execute()) { return true; }
         return false;
     }
 }
