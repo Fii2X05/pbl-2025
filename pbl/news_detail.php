@@ -14,15 +14,15 @@ $news = new News($db);
 $all_news = $news->read();
 ?>
 
+<section class="bg-primary text-white text-center py-5 mb-5">
+    <div class="container">
+        <h1 class="fw-bold display-5">Semua Berita & Artikel</h1>
+        <p class="lead text-white-50">Informasi terbaru dari LET Lab</p>
+    </div>
+</section>
+
 <section class="py-5 bg-light">
     <div class="container">
-
-        <div class="row mb-4">
-            <div class="col-12 text-center">
-                <h2 class="fw-bold">Semua Berita & Artikel</h2>
-                <p class="text-muted">Informasi terbaru dari LET Lab</p>
-            </div>
-        </div>
 
         <div class="row">
 
@@ -134,7 +134,7 @@ $all_news = $news->read();
         </div>
 
         <div class="text-center mt-5">
-            <a href="index.php#news" class="btn btn-outline-secondary">
+            <a href="index.php#news" class="btn btn-outline-primary px-4 rounded-pill">
                 ← Kembali ke Home
             </a>
         </div>

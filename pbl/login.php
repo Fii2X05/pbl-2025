@@ -1,14 +1,17 @@
 <?php
-$page_title = "LET Lab - Login";
-include_once 'includes/header.php';
 
+
+if (session_status() === PHP_SESSION_NONE) {
+    session_start();
+}
+
+// HAPUS SESSION LAMA JIKA MEMBUKA HALAMAN LOGIN
+// Ini memastikan user melihat form login, bukan di-redirect otomatis
 if(isset($_SESSION['loggedin']) && $_SESSION['loggedin'] === true){
-    if($_SESSION['role'] === 'admin'){
-        header("location: admin_dashboard.php");
-    } else {
-        header("location: index.php");
-    }
-    exit;
+    // Jangan redirect, tapi biarkan dia login ulang (logout otomatis)
+    $_SESSION = array();
+    session_destroy();
+    session_start(); 
 }
 
 include_once 'config/database.php';
@@ -16,35 +19,41 @@ include_once 'models/User.php';
 
 $database = new Database();
 $db = $database->getConnection();
-
 $user = new User($db);
 
 $login_err = "";
 
+// Proses Form Login (POST)
 if($_SERVER["REQUEST_METHOD"] == "POST"){
     $user->username = trim($_POST["username"]);
     $user->password = trim($_POST["password"]);
     
     if($user->login()){
-        if (session_status() === PHP_SESSION_NONE) {
-            session_start();
-        }
-        
+        // Set Variabel Session
         $_SESSION["loggedin"] = true;
         $_SESSION["id"] = $user->id;
-        $_SESSION["user_id"] = $user->id; 
+        $_SESSION["user_id"] = $user->id; // Konsistensi nama variabel
         $_SESSION["username"] = $user->username;
         $_SESSION["role"] = $user->role;
         
-        if($user->role === 'admin'){
-            header("location: admin_dashboard.php");
-        } else {
+        // Redirect berdasarkan Role
+        if($user->role != 'admin'){
+            // Dosen & Mahasiswa ke Halaman Utama
             header("location: index.php");
+        } else {
+            // Admin ke Dashboard
+            header("location: admin_dashboard.php");
         }
+        exit; // PENTING: Hentikan script setelah redirect
     } else {
         $login_err = "Username atau password salah.";
     }
 }
+
+// 2. BARU TAMPILKAN HTML (Setelah logika redirect selesai)
+// -----------------------------------------------------------
+$page_title = "LET Lab - Login";
+include_once 'includes/header.php'; 
 ?>
 
 <div class="login-wrapper">

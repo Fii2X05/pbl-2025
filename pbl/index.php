@@ -57,16 +57,45 @@ if(file_exists('models/Activity.php')){
     </div>
 </section>
 
-<section id="about" class="py-5">
+<section id="about" class="about-modern">
     <div class="container">
-        <div class="row">
-            <div class="col-lg-6">
-                <h2 class="mb-4">Tentang Kami</h2>
-                <p class="lead">Learning Engineering Technology Laboratory adalah pusat inovasi dan riset dalam teknologi pembelajaran yang berkomitmen untuk meningkatkan kualitas pendidikan melalui pemanfaatan berbagai data dari teknologi.</p>
-                <p>Kami membangun sistem pendukung lengkap berdasarkan perilaku belajar siswa. Pendekatan komprehensif kami mencakup aplikasi pembelajaran, analitik, integrasi AI, sistem dukungan adaptif, gamifikasi, dan pemantauan manajemen.</p>
+        <div class="row align-items-center">
+            <div class="col-lg-6 mb-5 mb-lg-0">
+                <h2 class="about-heading">Inovasi Pendidikan <br>Masa Depan</h2>
+                <p class="about-text">
+                    Learning Engineering Technology Laboratory (LET Lab) berkomitmen untuk meningkatkan kualitas pendidikan melalui riset mendalam dan pemanfaatan teknologi mutakhir.
+                </p>
+
+                <div class="feature-box">
+                    <div class="feature-icon"><i class="fas fa-brain"></i></div>
+                    <div>
+                        <h5 class="fw-bold text-dark mb-1">Riset Berbasis AI</h5>
+                        <p class="text-muted small mb-0">Mengembangkan sistem adaptif cerdas untuk personalisasi pembelajaran.</p>
+                    </div>
+                </div>
+
+                <div class="feature-box">
+                    <div class="feature-icon"><i class="fas fa-chart-line"></i></div>
+                    <div>
+                        <h5 class="fw-bold text-dark mb-1">Analisis Perilaku</h5>
+                        <p class="text-muted small mb-0">Memahami pola belajar siswa untuk strategi pengajaran yang efektif.</p>
+                    </div>
+                </div>
+
+                <div class="mt-4">
+                    <a href="#activities" class="btn btn-outline-primary rounded-pill px-4 py-2">
+                        Pelajari Riset Kami <i class="fas fa-arrow-down ms-2"></i>
+                    </a>
+                </div>
             </div>
+
             <div class="col-lg-6">
-                <img src="https://images.unsplash.com/photo-1522202176988-66273c2fd55f?ixlib=rb-1.2.1&auto=format&fit=crop&w=1350&q=80" class="img-fluid rounded" alt="Team Collaboration">
+                <div class="about-image-wrapper">
+                    <div class="img-decoration"></div>
+                    <img src="https://images.unsplash.com/photo-1522202176988-66273c2fd55f?ixlib=rb-1.2.1&auto=format&fit=crop&w=1350&q=80" 
+                         class="img-fluid about-main-img" 
+                         alt="Team Collaboration">
+                </div>
             </div>
         </div>
     </div>
@@ -149,7 +178,7 @@ if(file_exists('models/Activity.php')){
                                             <?php if(!empty($dosen['phone'])): ?>
                                                 <a href="tel:<?php echo htmlspecialchars($dosen['phone']); ?>" 
                                                    class="btn btn-sm btn-outline-success" title="Phone">
-                                                    <i class="fas fa-phone"></i>
+                                                    <i class="fab fa-whatsapp"></i>
                                                 </a>
                                             <?php endif; ?>
                                             <?php if(isset($social['linkedin'])): ?>
@@ -168,6 +197,12 @@ if(file_exists('models/Activity.php')){
                                                 <a href="<?php echo htmlspecialchars($social['website']); ?>" 
                                                    target="_blank" class="btn btn-sm btn-outline-secondary" title="Website">
                                                     <i class="fas fa-globe"></i>
+                                                </a>
+                                            <?php endif; ?>
+                                            <?php if(isset($social['instagram'])): ?>
+                                                <a href="<?php echo htmlspecialchars($social['instagram']); ?>" 
+                                                   target="_blank" class="btn btn-sm btn-outline-primary" title="instagram">
+                                                    <i class="fab fa-instagram"></i>
                                                 </a>
                                             <?php endif; ?>
                                         </div>
@@ -681,9 +716,6 @@ document.addEventListener('DOMContentLoaded', function() {
                 <div class="col-12 text-center py-5"><p class="text-muted">Belum ada produk yang ditampilkan.</p></div>
             <?php endif; ?>
         </div>
-        <div class="text-center mt-4">
-            <a href="#" class="btn btn-outline-primary px-4 rounded-pill">Lihat Semua Produk <i class="fas fa-arrow-right ms-2"></i></a>
-        </div>
     </div>
 </section>
 
@@ -958,6 +990,92 @@ document.addEventListener('DOMContentLoaded', function() {
 </section>
 
 <style>
+.about-modern {
+    position: relative;
+    padding: 100px 0;
+    background-color: #fff;
+    overflow: hidden;
+}
+
+.about-modern::before {
+    content: '';
+    position: absolute;
+    top: -50px;
+    right: -50px;
+    width: 300px;
+    height: 300px;
+    background: linear-gradient(45deg, var(--secondary-color), transparent);
+    opacity: 0.05;
+    border-radius: 50%;
+    z-index: 0;
+}
+
+.about-heading {
+    font-size: 2.5rem;
+    font-weight: 800;
+    margin-bottom: 1.5rem;
+    background: linear-gradient(to right, var(--primary-color), var(--secondary-color));
+    -webkit-background-clip: text;
+    -webkit-text-fill-color: transparent; 
+}
+
+.about-text {
+    font-size: 1.1rem;
+    line-height: 1.8;
+    color: var(--text-muted);
+    margin-bottom: 2rem;
+}
+
+.feature-box {
+    display: flex;
+    align-items: start;
+    gap: 15px;
+    margin-bottom: 20px;
+}
+
+.feature-icon {
+    width: 50px;
+    height: 50px;
+    background: rgba(52, 152, 219, 0.1);
+    color: var(--secondary-color);
+    border-radius: 12px;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    font-size: 1.2rem;
+    flex-shrink: 0;
+}
+
+/* Image Styling Modern */
+.about-image-wrapper {
+    position: relative;
+    padding: 20px;
+}
+
+.about-main-img {
+    border-radius: 20px;
+    box-shadow: 0 20px 40px rgba(0,0,0,0.15);
+    transition: transform 0.4s ease;
+    position: relative;
+    z-index: 2;
+}
+
+.about-main-img:hover {
+    transform: translateY(-10px) scale(1.02);
+}
+
+.img-decoration {
+    position: absolute;
+    bottom: 0;
+    left: 0;
+    width: 100%;
+    height: 100%;
+    border: 2px solid var(--secondary-color);
+    border-radius: 20px;
+    z-index: 1;
+    transform: translate(-15px, 15px);
+    opacity: 0.3;
+}
 #dosenCarousel .carousel-control-prev-icon,
 #dosenCarousel .carousel-control-next-icon {
     background-color: rgba(0, 0, 0, 0.5);

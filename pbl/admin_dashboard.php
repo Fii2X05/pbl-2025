@@ -4,7 +4,6 @@ include_once 'includes/header.php';
 
 // Check admin session
 if(!isset($_SESSION['loggedin']) || $_SESSION['loggedin'] !== true || $_SESSION['role'] !== 'admin'){
-    header("location: login.php");
     exit;
 }
 
@@ -38,8 +37,8 @@ $active_bookings = $booking->getActiveBookings();
                 <i class="fas fa-user-shield me-1"></i>
                 <span class="admin-name"><?php echo htmlspecialchars($_SESSION['username']); ?></span>
             </div>
-            <a href="logout.php" class="btn btn-sm btn-outline-light">
-                <i class="fas fa-sign-out-alt me-1"></i>Logout
+            <a href="#" class="btn btn-sm btn-outline-light" class="text-danger" data-bs-toggle="modal" data-bs-target="#logoutModal">
+                <i class="fas fa-sign-out-alt"></i> Sign Out
             </a>
         </div>
     </div>

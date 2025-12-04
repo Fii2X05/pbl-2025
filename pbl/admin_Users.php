@@ -2,13 +2,11 @@
 $page_title = "User Management - LET Lab Admin";
 include_once 'includes/header.php';
 
-// 1. CEK LOGIN
 if(!isset($_SESSION['loggedin']) || $_SESSION['loggedin'] !== true || $_SESSION['role'] !== 'admin'){
     header("location: login.php");
     exit;
 }
 
-// Set user_id default jika belum ada (untuk backward compatibility)
 if(!isset($_SESSION['user_id'])){
     $_SESSION['user_id'] = 0;
 }
@@ -20,20 +18,16 @@ $database = new Database();
 $db = $database->getConnection();
 $user = new User($db);
 
-// Variable untuk kontrol tampilan form
 $show_form = false;
 $edit_mode = false;
 $edit_data = null;
 
-// --- HANDLE FORM SUBMISSION (POST) ---
 if($_SERVER["REQUEST_METHOD"] == "POST"){
 
-    // A. TAMBAH USER (CREATE)
     if(isset($_POST['add_user'])){
         if(empty($_POST['username']) || empty($_POST['full_name']) || empty($_POST['password'])) {
             $error_msg = "Username, Full Name, and Password are required!";
         } else {
-            // Check if username already exists
             $check_query = "SELECT user_id FROM users WHERE username = :username";
             $check_stmt = $db->prepare($check_query);
             $check_stmt->bindParam(':username', $_POST['username']);
@@ -50,11 +44,10 @@ if($_SERVER["REQUEST_METHOD"] == "POST"){
                 $user->email = $_POST['email'] ?? null;
                 $user->role = $_POST['role'] ?? 'member';
                 
-                // Set student_type based on role
                 if($_POST['role'] == 'member') {
                     $user->student_type = $_POST['student_type'] ?? 'regular';
                 } else {
-                    $user->student_type = null; // Set to null for admin and dosen
+                    $user->student_type = null; 
                 }
                 
                 $user->is_active = isset($_POST['is_active']) ? 1 : 0;
@@ -70,7 +63,6 @@ if($_SERVER["REQUEST_METHOD"] == "POST"){
         }
     }
 
-    // B. UPDATE USER
     if(isset($_POST['update_user'])){
         $user->id = $_POST['user_id'];
         $user->username = $_POST['username'];
@@ -80,16 +72,14 @@ if($_SERVER["REQUEST_METHOD"] == "POST"){
         $user->email = $_POST['email'];
         $user->role = $_POST['role'];
         
-        // Set student_type based on role
         if($_POST['role'] == 'member') {
             $user->student_type = $_POST['student_type'] ?? 'regular';
         } else {
-            $user->student_type = null; // Set to null for admin and dosen
+            $user->student_type = null; 
         }
         
         $user->is_active = isset($_POST['is_active']) ? 1 : 0;
         
-        // Update password only if provided
         if(!empty($_POST['password'])){
             $user->password = password_hash($_POST['password'], PASSWORD_DEFAULT);
         }
@@ -104,7 +94,6 @@ if($_SERVER["REQUEST_METHOD"] == "POST"){
     }
 }
 
-// --- HANDLE DELETE (GET) ---
 if(isset($_GET['delete_id'])){
     $user->id = $_GET['delete_id'];
     if($user->delete()){
@@ -114,14 +103,12 @@ if(isset($_GET['delete_id'])){
     }
 }
 
-// --- HANDLE SHOW FORM (GET) ---
 if(isset($_GET['action'])){
     if($_GET['action'] == 'add'){
         $show_form = true;
     } elseif($_GET['action'] == 'edit' && isset($_GET['id'])){
         $show_form = true;
         $edit_mode = true;
-        // Ambil data user untuk di-edit
         $stmt = $user->read();
         while($row = $stmt->fetch(PDO::FETCH_ASSOC)){
             if($row['user_id'] == $_GET['id']){
@@ -132,10 +119,8 @@ if(isset($_GET['action'])){
     }
 }
 
-// AMBIL DATA USERS
 $users = $user->read();
 
-// STATISTIK
 $stats_query = "SELECT 
     COUNT(*) as total_users,
     COUNT(CASE WHEN role = 'admin' THEN 1 END) as total_admins,
@@ -482,7 +467,6 @@ $stats = $stats_stmt->fetch(PDO::FETCH_ASSOC);
                                                     <i class="fas fa-edit"></i>
                                                 </a>
                                                 <?php 
-                                                // Cek apakah user_id di session ada, dan tidak sama dengan user yang sedang ditampilkan
                                                 $current_user_id = isset($_SESSION['user_id']) ? $_SESSION['user_id'] : 0;
                                                 if($user_data['user_id'] != $current_user_id): 
                                                 ?>

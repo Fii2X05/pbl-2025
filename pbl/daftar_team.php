@@ -71,19 +71,19 @@ $all_members = $stmt->fetchAll(PDO::FETCH_ASSOC);
 
                         <div class="d-flex justify-content-center flex-wrap gap-2 mb-2">
                             <?php if(!empty($member['email'])): ?>
-                                <a href="mailto:<?php echo htmlspecialchars($member['email']); ?>" class="btn-social btn-email" title="Email" target="_blank">
+                                <a href="mailto:<?php echo htmlspecialchars($member['email']); ?>" class="btn btn-sm btn-outline-primary" title="Email" target="_blank">
                                     <i class="fas fa-envelope"></i>
                                 </a>
                             <?php endif; ?>
                             
                             <?php if(!empty($member['phone'])): ?>
-                                <a href="https://wa.me/<?php echo htmlspecialchars($member['phone']); ?>" class="btn-social btn-whatsapp" title="WhatsApp" target="_blank">
+                                <a href="https://wa.me/<?php echo htmlspecialchars($member['phone']); ?>" class="btn btn-sm btn-outline-success" title="WhatsApp" target="_blank">
                                     <i class="fab fa-whatsapp"></i>
                                 </a>
                             <?php endif; ?>
                             
                             <?php if(!empty($social['linkedin'])): ?>
-                                <a href="<?php echo $social['linkedin']; ?>" class="btn-social btn-linkedin" title="LinkedIn" target="_blank">
+                                <a href="<?php echo $social['linkedin']; ?>" class="btn btn-sm btn-outline-primary" title="LinkedIn" target="_blank">
                                     <i class="fab fa-linkedin-in"></i>
                                 </a>
                             <?php endif; ?>
@@ -93,36 +93,48 @@ $all_members = $stmt->fetchAll(PDO::FETCH_ASSOC);
                                     <i class="fab fa-instagram"></i>
                                 </a>
                             <?php endif; ?>
+
+                            <?php if(!empty($social['website'])): ?>
+                                <a href="<?php echo $social['website']; ?>" class="btn btn-sm btn-outline-primary" title="Instagram" target="_blank">
+                                    <i class="fab fa-globe"></i>
+                                </a>
+                            <?php endif; ?>
+
+                            <?php if(!empty($social['twitter'])): ?>
+                                <a href="<?php echo $social['twitter']; ?>" class="btn btn-sm btn-outline-info" title="twitter" target="_blank">
+                                    <i class="fab fa-twitter-in"></i>
+                                </a>
+                            <?php endif; ?>
                         </div>
 
                         <div class="d-flex justify-content-center flex-wrap gap-2 mt-1">
                             <?php if(!empty($social['google_scholar'])): ?>
-                                <a href="<?php echo $social['google_scholar']; ?>" class="btn-academic btn-scholar" target="_blank">
-                                    <i class="fas fa-graduation-cap"></i> Scholar
+                                <a href="<?php echo $social['google_scholar']; ?>" class="btn btn-sm btn-primary" target="_blank">
+                                    <i class="fas fa-book"></i> Scholar
                                 </a>
                             <?php endif; ?>
 
                             <?php if(!empty($social['researchgate'])): ?>
-                                <a href="<?php echo $social['researchgate']; ?>" class="btn-academic btn-rg" target="_blank">
+                                <a href="<?php echo $social['researchgate']; ?>" class="btn btn-sm btn-success" target="_blank">
                                     <i class="fab fa-researchgate"></i> RG
                                 </a>
                             <?php endif; ?>
 
                             <?php if(!empty($social['orcid'])): ?>
-                                <a href="<?php echo $social['orcid']; ?>" class="btn-academic btn-orcid" target="_blank">
-                                    <i class="fab fa-orcid"></i> ORCID
+                                <a href="<?php echo $social['orcid']; ?>" class="btn btn-sm btn-info text-white" target="_blank">
+                                    <i class="fab fa-id-card"></i> ORCID
                                 </a>
                             <?php endif; ?>
 
                             <?php if(!empty($social['scopus'])): ?>
-                                <a href="<?php echo $social['scopus']; ?>" class="btn-academic btn-scopus" target="_blank">
+                                <a href="<?php echo $social['scopus']; ?>" class="btn btn-sm btn-danger" target="_blank">
                                     <i class="fas fa-flask"></i> Scopus
                                 </a>
                             <?php endif; ?>
 
                             <?php if(!empty($social['sinta'])): ?>
-                                <a href="<?php echo $social['sinta']; ?>" class="btn-academic btn-sinta" target="_blank">
-                                    SINTA
+                                <a href="<?php echo $social['sinta']; ?>" class="btn btn-sm btn-warning text-white" target="_blank">
+                                    <i class="fas fa-graduation-cap"></i> <small>SINTA</small>
                                 </a>
                             <?php endif; ?>
                         </div>
@@ -131,6 +143,11 @@ $all_members = $stmt->fetchAll(PDO::FETCH_ASSOC);
                 </div>
             </div>
             <?php endforeach; ?>
+        </div>
+                <div class="text-center mt-5">
+            <a href="index.php#news" class="btn btn-outline-primary px-4 rounded-pill">
+                ← Kembali ke Home
+            </a>
         </div>
     </div>
 </section>
@@ -224,7 +241,6 @@ document.getElementById('searchTeam').addEventListener('keyup', function() {
 </script>
 
 <style>
-/* Styling Card & Image */
 .team-card {
     transition: transform 0.3s ease, box-shadow 0.3s ease;
     overflow: hidden;
@@ -244,7 +260,6 @@ document.getElementById('searchTeam').addEventListener('keyup', function() {
     border: 3px solid #fff; box-shadow: 0 4px 10px rgba(0,0,0,0.1);
 }
 
-/* Styling Tombol Sosmed (Bulat) */
 .btn-social {
     width: 40px; height: 40px; border-radius: 8px; 
     display: flex; align-items: center; justify-content: center;
@@ -257,7 +272,6 @@ document.getElementById('searchTeam').addEventListener('keyup', function() {
 .btn-linkedin { background: #0077b5; }
 .btn-instagram { background: #C13584; }
 
-/* Styling Tombol Akademik (Persegi Panjang) */
 .btn-academic {
     padding: 6px 12px; border-radius: 6px; color: #fff; font-size: 0.85rem; font-weight: 600;
     text-decoration: none; display: inline-flex; align-items: center; gap: 6px;

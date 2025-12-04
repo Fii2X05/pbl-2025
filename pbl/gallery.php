@@ -96,6 +96,11 @@ $gallery_items = $stmt->fetchAll(PDO::FETCH_ASSOC);
         </div>
         <?php endif; ?>
     </div>
+            <div class="text-center mt-5">
+            <a href="index.php#news" class="btn btn-outline-primary px-4 rounded-pill">
+                ← Kembali ke Home
+            </a>
+        </div>
 </div>
 
 <div class="modal fade" id="galleryModal" tabindex="-1" aria-hidden="true">
